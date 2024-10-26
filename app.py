@@ -5,6 +5,31 @@ import csv
 app = Flask(__name__)
 
 
+def read_csv(filename):
+    data = []
+    with open(filename, "r") as file:
+        reader = csv.DictReader(file)
+        for row in reader:
+            data.append(row)
+    return data
+
+
+def update_event_request_status(record_number, new_status):
+    updated_rows = []
+    with open("event_request.csv", "r", newline="") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            if row["Record Number"] == record_number:
+                row["Status"] = new_status  # Update the status
+            updated_rows.append(row)
+
+    # Write the updated rows back to the CSV
+    with open("event_request.csv", "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=updated_rows[0].keys())
+        writer.writeheader()
+        writer.writerows(updated_rows)
+
+
 @app.route("/")
 def login():
     return render_template("login.html")
@@ -18,6 +43,24 @@ def customerServiceHome():
 @app.route("/customerservice/form")
 def customerServiceForm():
     return render_template("customerServiceForm.html")
+
+
+@app.route("/seniorcustomerservice/home")
+def seniorCustomerServiceHome():
+    data = read_csv("event_request.csv")
+    return render_template("seniorCustomerServiceHome.html", data=data)
+
+
+@app.route("/seniorcustomerservice/home/accept/<record_number>", methods=["POST"])
+def accept_request_by_scs(record_number):
+    update_event_request_status(record_number, "approved by scs")
+    return "", 204
+
+
+@app.route("/seniorcustomerservice/home/reject/<record_number>", methods=["POST"])
+def reject_event(record_number):
+    update_event_request_status(record_number, "rejected")
+    return "", 204
 
 
 @app.route("/customerservice/form/submit", methods=["POST"])
