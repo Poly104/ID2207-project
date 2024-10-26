@@ -33,5 +33,68 @@
 }
 
 .login_content_button:hover {
-    background-color: #0056b3;       /* Darker color on hover */
+    background-color: #0056b3;
+    cursor: pointer;
+}
+
+.customerservicehome{
+    display: flex;
+    justify-content: center;       /* Centers horizontally */
+    align-items: center;           /* Centers vertically */
+    height: 100vh;
+    flex-direction: column;
+}
+
+.customerservicehome_content{
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+.customerservicehome_content_button {
+    display: inline-flex;       
+    justify-content: center;    
+    align-items: center;        
+    padding: 40px 100px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 16px; 
+}
+
+.customerservicehome_content_button:hover {
+    background-color: #0056b3;
+    cursor: pointer;
+}
+
+.customerserviceform{
+    margin: 20px;
+}
+.customerserviceform_form{
+    display: flex;
+    gap: 20px;
+    flex-direction: column;
+}
+
+.customerserviceform_form_question{
+    display: flex;
+    gap: 5px;
+    flex-direction: column;
+    width: 500px;
+
+    input{
+        height: 20px;
+    }
+}
+
+.customerserviceform_form_button{
+    width: 200px;
+    height: 50px;
+    background-color: #007bff;
+    color: white;
+
+}
+
+.customerserviceform_form_button:hover{
+    background-color: #0056b3;
 }

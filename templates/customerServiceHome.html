@@ -1,0 +1,18 @@
+{% extends "base.html" %} {% block head %} {% endblock %} {%block body%}
+<div class="customerservicehome">
+  <div class="customerservicehome_header">
+    <h1>Welcome Customer Service Officer!</h1>
+  </div>
+  <div class="customerservicehome_content">
+    <a
+      class="customerservicehome_content_button"
+      href="{{url_for('customerServiceForm')}}"
+      >Initiate New Event Planning Request</a
+    >
+
+    <a class="customerservicehome_content_button" href="{{url_for('login')}}"
+      >Back</a
+    >
+  </div>
+</div>
+{%endblock%}

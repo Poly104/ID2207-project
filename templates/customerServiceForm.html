@@ -1,0 +1,62 @@
+{% extends "base.html" %} {% block head %} {% endblock %} {%block body%}
+<div class="customerserviceform">
+  <div class="customerserviceform_header">
+    <h1>Request For Event Planning</h1>
+  </div>
+
+  <form
+    class="customerserviceform_form"
+    action="{{url_for('evnetPlanningRequestSubmit')}}"
+    method="post"
+  >
+    <div class="customerserviceform_form_question">
+      <text class="customerserviceform_form_fieldname">Record Number</text>
+      <input type="text" name="record_number" />
+    </div>
+
+    <div class="customerserviceform_form_question">
+      <text class="customerserviceform_form_fieldname">Client Name</text>
+      <input type="text" name="client_name" />
+    </div>
+
+    <div class="customerserviceform_form_question">
+      <text class="customerserviceform_form_fieldname">Event Type</text>
+      <input type="text" name="event_type" />
+    </div>
+
+    <div class="customerserviceform_form_question">
+      <text class="customerserviceform_form_fieldname">Start Date</text>
+      <input type="text" name="start_date" />
+    </div>
+
+    <div class="customerserviceform_form_question">
+      <text class="customerserviceform_form_fieldname"
+        >Event Duration (day)</text
+      >
+      <input type="number" name="duration" />
+    </div>
+
+    <div class="customerserviceform_form_question">
+      <text class="customerserviceform_form_fieldname"
+        >Expected Number of Attendees</text
+      >
+      <input type="number" name="attendees_number" />
+    </div>
+
+    <div class="customerserviceform_form_question">
+      <text class="customerserviceform_form_fieldname">Preferences</text>
+      <input type="text" name="preferences" />
+    </div>
+
+    <div class="customerserviceform_form_question">
+      <text class="customerserviceform_form_fieldname"
+        >Expected Budget (SEK)</text
+      >
+      <input type="number" name="budget" />
+    </div>
+    <button class="customerserviceform_form_button" type="submit">
+      Submit
+    </button>
+  </form>
+</div>
+{%endblock%}
