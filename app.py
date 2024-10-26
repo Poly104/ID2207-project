@@ -31,6 +31,7 @@ def evnetPlanningRequestSubmit():
     attendees_number = request.form.get("attendees_number")
     preferences = request.form.get("preferences")
     budget = request.form.get("budget")
+    status = "new"
 
     # Save data to a file
     with open("event_request.csv", "a", newline="") as f:  # Append mode
@@ -46,6 +47,7 @@ def evnetPlanningRequestSubmit():
                     "Attendees Number",
                     "Preferences",
                     "Budget",
+                    "Status",
                 ]
             )
 
@@ -59,6 +61,7 @@ def evnetPlanningRequestSubmit():
                 attendees_number,
                 preferences,
                 budget,
+                status,
             ]
         )
     return redirect(url_for("customerServiceHome"))

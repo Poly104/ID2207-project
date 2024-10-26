@@ -46,6 +46,7 @@ def test_event_planning_request_submit():
             "100",
             "Vegetarian",
             "1000",
+            "new",
         ]
 
     # Cleanup: remove the test CSV file
