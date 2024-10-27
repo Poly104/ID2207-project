@@ -98,3 +98,22 @@
 .customerserviceform_form_button:hover{
     background-color: #0056b3;
 }
+
+.seniorcustomerservicehome_content_button {
+    display: inline-flex;       
+    justify-content: center;    
+    align-items: center;        
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 16px; 
+    margin: 10px;
+}
+
+.seniorcustomerservicehome_content_button:hover {
+    background-color: #0056b3;
+    cursor: pointer;
+    color: white;
+}
