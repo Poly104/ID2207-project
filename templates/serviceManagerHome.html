@@ -92,6 +92,37 @@
         </tbody>
       </table>
     </div>
+
+    <!-- Budget Negotiation Requests table-->
+    <div class="servicemanagerhome_table_extraBudget">
+      <h1 class="mt-5">Budget Negotiation Requests</h1>
+      <table class="table table-striped mt-3">
+        <thead>
+          <tr>
+            <th>Project Reference</th>
+            <th>Sender</th>
+            <th>Required Amount</th>
+            <th>Reason</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for row in data_extrabudget if (row["Status"] == "approved by
+          service manager" or row["Status"] == "rejected by financial manager"
+          or row["Status"] == "approved by financial manager" or row["Status"]
+          == "approved by service manager")%}
+          <tr id="row-{{ row['Project Reference'] }}">
+            <td>{{ row['Project Reference'] }}</td>
+            <td>{{ row['Sender'] }}</td>
+            <td>{{ row['Required Amount'] }}</td>
+            <td>{{ row['Reason'] }}</td>
+            <td class="status">{{ row['Status'] }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
     <script>
       $(document).ready(function () {
         // Handle Accept Button Click

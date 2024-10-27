@@ -200,13 +200,13 @@ def newTaskSubmit_service():
 
 @app.route("/servicemanager/home/accept/<record_number>", methods=["POST"])
 def accept_budget_request_by_servicemanager(record_number):
-    update_budget_request_status_service(record_number, "approved by manager")
+    update_budget_request_status_service(record_number, "approved by service manager")
     return "", 204
 
 
 @app.route("/servicemanager/home/reject/<record_number>", methods=["POST"])
 def reject_budget_request_by_servicemanager(record_number):
-    update_budget_request_status_service(record_number, "rejected")
+    update_budget_request_status_service(record_number, "rejected by service manager")
     return "", 204
 
 
