@@ -30,6 +30,22 @@ def update_event_request_status(record_number, new_status):
         writer.writerows(updated_rows)
 
 
+def update_budget_request_status_service(record_number, new_status):
+    updated_rows = []
+    with open("budget_request_service.csv", "r", newline="") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            if row["Project Reference"] == record_number:
+                row["Status"] = new_status  # Update the status
+            updated_rows.append(row)
+
+    # Write the updated rows back to the CSV
+    with open("budget_request_service.csv", "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=updated_rows[0].keys())
+        writer.writeheader()
+        writer.writerows(updated_rows)
+
+
 @app.route("/")
 def login():
     return render_template("login.html")
@@ -132,6 +148,98 @@ def accept_request_by_admin(record_number):
 def reject_event_request_by_admin(record_number):
     update_event_request_status(record_number, "rejected")
     return "", 204
+
+
+# Service Manager
+@app.route("/servicemanager/home")
+def serviceManagerHome():
+    data_task = read_csv("task_service.csv")
+    data_extrabudget = read_csv("budget_request_service.csv")
+    return render_template(
+        "serviceManagerHome.html",
+        data_task=data_task,
+        data_extrabudget=data_extrabudget,
+    )
+
+
+@app.route("/servicemanager/newtask")
+def serviceManagerNewTask():
+    return render_template("serviceManagerNewTask.html")
+
+
+@app.route("/servicemanager/newtask/submit", methods=["POST"])
+def newTaskSubmit_service():
+    # Get data from form
+    project_reference = request.form.get("project_reference")
+    assignee = request.form.get("assignee")
+    priority = request.form.get("priority")
+    description = request.form.get("description")
+    status = "assigned"
+    assignee_edit = ""
+
+    # Save data to a file
+    with open("task_service.csv", "a", newline="") as f:  # Append mode
+        writer = csv.writer(f)
+        if f.tell() == 0:  # Check if the file is empty
+            writer.writerow(
+                [
+                    "Project Reference",
+                    "Assignee",
+                    "Priority",
+                    "Description",
+                    "Status",
+                    "Assignee Edit",
+                ]
+            )
+
+        writer.writerow(
+            [project_reference, assignee, priority, description, status, assignee_edit]
+        )
+    return redirect(url_for("serviceManagerHome"))
+
+
+@app.route("/servicemanager/home/accept/<record_number>", methods=["POST"])
+def accept_budget_request_by_servicemanager(record_number):
+    update_budget_request_status_service(record_number, "approved by service manager")
+    return "", 204
+
+
+@app.route("/servicemanager/home/reject/<record_number>", methods=["POST"])
+def reject_budget_request_by_servicemanager(record_number):
+    update_budget_request_status_service(record_number, "rejected by service manager")
+    return "", 204
+
+
+@app.route("/servicemanager/newhire")
+def serviceManagerNewHire():
+    return render_template("serviceManagerNewHire.html")
+
+
+@app.route("/servicemanager/newhire/submit", methods=["POST"])
+def serviceManagerNewHireSubmit():
+    # Get data from form
+    contract_type = request.form.get("contract_type")
+    department = request.form.get("department")
+    experience = request.form.get("experience")
+    job_title = request.form.get("job_title")
+    description = request.form.get("description")
+
+    # Save data to a file
+    with open("new_hire.csv", "a", newline="") as f:  # Append mode
+        writer = csv.writer(f)
+        if f.tell() == 0:  # Check if the file is empty
+            writer.writerow(
+                [
+                    "Contract Type",
+                    "Requesting Department",
+                    "Year of Experience",
+                    "Job Title",
+                    "Job Description",
+                ]
+            )
+
+        writer.writerow([contract_type, department, experience, job_title, description])
+    return redirect(url_for("serviceManagerHome"))
 
 
 if __name__ == "__main__":

@@ -1,0 +1,40 @@
+{% extends "base.html" %} {% block head %} {% endblock %} {%block body%}
+<div class="customerserviceform">
+  <div class="customerserviceform_header">
+    <h1>Create New Task</h1>
+  </div>
+
+  <form
+    class="customerserviceform_form"
+    action="{{url_for('newTaskSubmit_service')}}"
+    method="post"
+  >
+    <div class="customerserviceform_form_question">
+      <text class="customerserviceform_form_fieldname">Project Reference</text>
+      <input type="text" name="project_reference" />
+    </div>
+
+    <div class="customerserviceform_form_question">
+      <text class="customerserviceform_form_fieldname">Assignee</text>
+      <input type="text" name="Assignee" />
+    </div>
+
+    <div class="customerserviceform_form_question">
+      <text class="customerserviceform_form_fieldname">Priority</text>
+      <div class="customerserviceform_form_radio">
+        <input type="radio" name="priority" value="high" /> High
+        <input type="radio" name="priority" value="medium" /> Medium
+        <input type="radio" name="priority" value="low" /> Low
+      </div>
+    </div>
+
+    <div class="customerserviceform_form_question">
+      <text class="customerserviceform_form_fieldname">Description</text>
+      <textarea name="description"></textarea>
+    </div>
+    <button class="customerserviceform_form_button" type="submit">
+      Send Task
+    </button>
+  </form>
+</div>
+{%endblock%}
