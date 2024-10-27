@@ -210,5 +210,37 @@ def reject_budget_request_by_servicemanager(record_number):
     return "", 204
 
 
+@app.route("/servicemanager/newhire")
+def serviceManagerNewHire():
+    return render_template("serviceManagerNewHire.html")
+
+
+@app.route("/servicemanager/newhire/submit", methods=["POST"])
+def serviceManagerNewHireSubmit():
+    # Get data from form
+    contract_type = request.form.get("contract_type")
+    department = request.form.get("department")
+    experience = request.form.get("experience")
+    job_title = request.form.get("job_title")
+    description = request.form.get("description")
+
+    # Save data to a file
+    with open("new_hire.csv", "a", newline="") as f:  # Append mode
+        writer = csv.writer(f)
+        if f.tell() == 0:  # Check if the file is empty
+            writer.writerow(
+                [
+                    "Contract Type",
+                    "Requesting Department",
+                    "Year of Experience",
+                    "Job Title",
+                    "Job Description",
+                ]
+            )
+
+        writer.writerow([contract_type, department, experience, job_title, description])
+    return redirect(url_for("serviceManagerHome"))
+
+
 if __name__ == "__main__":
     app.run(debug=True)
