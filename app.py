@@ -35,6 +35,7 @@ def login():
     return render_template("login.html")
 
 
+# Customer Service
 @app.route("/customerservice/home")
 def customerServiceHome():
     return render_template("customerServiceHome.html")
@@ -43,24 +44,6 @@ def customerServiceHome():
 @app.route("/customerservice/form")
 def customerServiceForm():
     return render_template("customerServiceForm.html")
-
-
-@app.route("/seniorcustomerservice/home")
-def seniorCustomerServiceHome():
-    data = read_csv("event_request.csv")
-    return render_template("seniorCustomerServiceHome.html", data=data)
-
-
-@app.route("/seniorcustomerservice/home/accept/<record_number>", methods=["POST"])
-def accept_request_by_scs(record_number):
-    update_event_request_status(record_number, "approved by scs")
-    return "", 204
-
-
-@app.route("/seniorcustomerservice/home/reject/<record_number>", methods=["POST"])
-def reject_event(record_number):
-    update_event_request_status(record_number, "rejected")
-    return "", 204
 
 
 @app.route("/customerservice/form/submit", methods=["POST"])
@@ -75,6 +58,7 @@ def evnetPlanningRequestSubmit():
     preferences = request.form.get("preferences")
     budget = request.form.get("budget")
     status = "new"
+    comment = ""
 
     # Save data to a file
     with open("event_request.csv", "a", newline="") as f:  # Append mode
@@ -91,6 +75,7 @@ def evnetPlanningRequestSubmit():
                     "Preferences",
                     "Budget",
                     "Status",
+                    "Comment",
                 ]
             )
 
@@ -105,9 +90,48 @@ def evnetPlanningRequestSubmit():
                 preferences,
                 budget,
                 status,
+                comment,
             ]
         )
     return redirect(url_for("customerServiceHome"))
+
+
+# Senior Customer Service
+@app.route("/seniorcustomerservice/home")
+def seniorCustomerServiceHome():
+    data = read_csv("event_request.csv")
+    return render_template("seniorCustomerServiceHome.html", data=data)
+
+
+@app.route("/seniorcustomerservice/home/accept/<record_number>", methods=["POST"])
+def accept_request_by_scs(record_number):
+    update_event_request_status(record_number, "approved by scs")
+    return "", 204
+
+
+@app.route("/seniorcustomerservice/home/reject/<record_number>", methods=["POST"])
+def reject_event_request_by_scs(record_number):
+    update_event_request_status(record_number, "rejected")
+    return "", 204
+
+
+# Admin Manager
+@app.route("/administrativemanager/home")
+def administrativeManagerHome():
+    data = read_csv("event_request.csv")
+    return render_template("administrativeManagerHome.html", data=data)
+
+
+@app.route("/administrativemanager/home/accept/<record_number>", methods=["POST"])
+def accept_request_by_admin(record_number):
+    update_event_request_status(record_number, "approved by admin")
+    return "", 204
+
+
+@app.route("/administrativemanager/home/reject/<record_number>", methods=["POST"])
+def reject_event_request_by_admin(record_number):
+    update_event_request_status(record_number, "rejected")
+    return "", 204
 
 
 if __name__ == "__main__":
