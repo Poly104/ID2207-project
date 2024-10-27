@@ -87,6 +87,13 @@
     }
 }
 
+.customerserviceform_form_radio{
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+    margin-top: 5px;
+}
+
 .customerserviceform_form_button{
     width: 200px;
     height: 50px;
