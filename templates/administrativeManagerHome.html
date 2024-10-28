@@ -39,7 +39,8 @@
           </tr>
         </thead>
         <tbody>
-          {% for row in data if row["Status"] == "approved by scs"%}
+          {% for row in data if (row["Status"] == "reviewed by financial
+          manager" or row["Status"] == "reviewed by financial manager")%}
           <tr id="row-{{ row['Record Number'] }}">
             <td>{{ row['Record Number'] }}</td>
             <td>{{ row['Client Name'] }}</td>

@@ -79,6 +79,14 @@ def update_new_hire_status(record_number, new_status):
         writer.writerows(updated_rows)
 
 
+def create_csv_with_headers(filename, headers):
+    # Open the file in write mode, which will create a new file or overwrite an existing one
+    with open(filename, mode="w", newline="") as file:
+        writer = csv.writer(file)
+        # Write the header row to the CSV file
+        writer.writerow(headers)
+
+
 @app.route("/")
 def login():
     return render_template("login.html")
@@ -547,5 +555,135 @@ def reject_request_by_hr(record_number):
     return "", 204
 
 
+# Financial Manager
+@app.route("/financialmanager/home")
+def financialManagerHome():
+    data_event = read_csv("event_request.csv")
+    data_service = read_csv("budget_request_service.csv")
+    data_production = read_csv("budget_request_production.csv")
+    return render_template(
+        "financialManagerHome.html",
+        data_event=data_event,
+        data_service=data_service,
+        data_production=data_production,
+    )
+
+
+@app.route("/financialmanager/home/update/<int:row_id>", methods=["POST"])
+def financialManagerCommentSubmit(row_id):
+    new_value = request.json["new_value"]
+    data = read_csv("event_request.csv")
+
+    # Update the specific column in the selected row
+    data[row_id]["Comment"] = new_value
+    data[row_id]["Status"] = "reviewed by financial manager"
+
+    # Write updated data back to CSV
+    with open("event_request.csv", "w", newline="") as csvfile:
+        fieldnames = data[0].keys()
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(data)
+
+    return redirect(url_for("financialManagerHome"))
+
+
+@app.route("/financialmanager/home/service/accept/<record_number>", methods=["POST"])
+def accept_request_by_financail_manager_service(record_number):
+    update_budget_request_status_service(record_number, "approved by financial manager")
+    return "", 204
+
+
+@app.route("/financialmanager/home/service/reject/<record_number>", methods=["POST"])
+def reject_request_by_financail_manager_service(record_number):
+    update_budget_request_status_service(record_number, "rejected")
+    return "", 204
+
+
+@app.route("/financialmanager/home/production/accept/<record_number>", methods=["POST"])
+def accept_request_by_financail_manager_production(record_number):
+    update_budget_request_status_production(
+        record_number, "approved by financial manager"
+    )
+    return "", 204
+
+
+@app.route("/financialmanager/home/production/reject/<record_number>", methods=["POST"])
+def reject_request_by_financail_manager_production(record_number):
+    update_budget_request_status_production(record_number, "rejected")
+    return "", 204
+
+
 if __name__ == "__main__":
+    create_csv_with_headers(
+        "budget_request_production.csv",
+        [
+            "Project Reference",
+            "Department",
+            "Required Amount",
+            "Sender",
+            "Reason",
+            "Status",
+        ],
+    )
+    create_csv_with_headers(
+        "budget_request_service.csv",
+        [
+            "Project Reference",
+            "Department",
+            "Required Amount",
+            "Sender",
+            "Reason",
+            "Status",
+        ],
+    )
+    create_csv_with_headers(
+        "event_request.csv",
+        [
+            "Record Number",
+            "Client Name",
+            "Event Type",
+            "Start Date",
+            "Duration",
+            "Attendees Number",
+            "Preferences",
+            "Budget",
+            "Status",
+            "Comment",
+        ],
+    )
+    create_csv_with_headers(
+        "new_hire.csv",
+        [
+            "Reference Number",
+            "Contract Type",
+            "Requesting Department",
+            "Year of Experience",
+            "Job Title",
+            "Job Description",
+            "Status",
+        ],
+    )
+    create_csv_with_headers(
+        "task_production.csv",
+        [
+            "Project Reference",
+            "Assignee",
+            "Priority",
+            "Description",
+            "Status",
+            "Assignee Edit",
+        ],
+    )
+    create_csv_with_headers(
+        "task_service.csv",
+        [
+            "Project Reference",
+            "Assignee",
+            "Priority",
+            "Description",
+            "Status",
+            "Assignee Edit",
+        ],
+    )
     app.run(debug=True)
