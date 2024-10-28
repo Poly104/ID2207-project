@@ -10,7 +10,11 @@
         href="{{url_for('administrativeManagerHome')}}"
         >Administration Manager</a
       >
-      <a class="login_content_button">Production Manager</a>
+      <a
+        class="login_content_button"
+        href="{{url_for('productionManagerHome')}}"
+        >Production Manager</a
+      >
       <a class="login_content_button" href="{{url_for('serviceManagerHome')}}"
         >Service Manager</a
       >
@@ -27,7 +31,9 @@
       >
     </div>
     <div class="login_content_row">
-      <a class="login_content_button">Production Team</a>
+      <a class="login_content_button" href="{{url_for('productionTeamHome')}}"
+        >Production Team</a
+      >
       <a class="login_content_button" href="{{url_for('serviceTeamHome')}}"
         >Service Team</a
       >

@@ -47,6 +47,22 @@ def update_budget_request_status_service(record_number, new_status):
         writer.writerows(updated_rows)
 
 
+def update_budget_request_status_production(record_number, new_status):
+    updated_rows = []
+    with open("budget_request_production.csv", "r", newline="") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            if row["Project Reference"] == record_number:
+                row["Status"] = new_status  # Update the status
+            updated_rows.append(row)
+
+    # Write the updated rows back to the CSV
+    with open("budget_request_production.csv", "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=updated_rows[0].keys())
+        writer.writeheader()
+        writer.writerows(updated_rows)
+
+
 def update_new_hire_status(record_number, new_status):
     updated_rows = []
     with open("new_hire.csv", "r", newline="") as f:
@@ -334,6 +350,179 @@ def serviceTeamBudgetRequestSubmit():
 
         writer.writerow([project_reference, department, amount, sender, reason, status])
     return redirect(url_for("serviceTeamHome"))
+
+
+# Production Manager
+@app.route("/productionmanager/home")
+def productionManagerHome():
+    data_task = read_csv("task_production.csv")
+    data_extrabudget = read_csv("budget_request_production.csv")
+    return render_template(
+        "productionManagerHome.html",
+        data_task=data_task,
+        data_extrabudget=data_extrabudget,
+    )
+
+
+@app.route("/producitonmanager/newtask")
+def productionManagerNewTask():
+    return render_template("productionManagerNewTask.html")
+
+
+@app.route("/productionmanager/newtask/submit", methods=["POST"])
+def newTaskSubmit_production():
+    # Get data from form
+    project_reference = request.form.get("project_reference")
+    assignee = request.form.get("assignee")
+    priority = request.form.get("priority")
+    description = request.form.get("description")
+    status = "assigned"
+    assignee_edit = ""
+
+    # Save data to a file
+    with open("task_production.csv", "a", newline="") as f:  # Append mode
+        writer = csv.writer(f)
+        if f.tell() == 0:  # Check if the file is empty
+            writer.writerow(
+                [
+                    "Project Reference",
+                    "Assignee",
+                    "Priority",
+                    "Description",
+                    "Status",
+                    "Assignee Edit",
+                ]
+            )
+
+        writer.writerow(
+            [project_reference, assignee, priority, description, status, assignee_edit]
+        )
+    return redirect(url_for("productionManagerHome"))
+
+
+@app.route("/productionmanager/home/accept/<record_number>", methods=["POST"])
+def accept_budget_request_by_productionmanager(record_number):
+    update_budget_request_status_production(
+        record_number, "approved by production manager"
+    )
+    return "", 204
+
+
+@app.route("/productionmanager/home/reject/<record_number>", methods=["POST"])
+def reject_budget_request_by_productionmanager(record_number):
+    update_budget_request_status_production(
+        record_number, "rejected by production manager"
+    )
+    return "", 204
+
+
+@app.route("/productionmanager/newhire")
+def productionManagerNewHire():
+    return render_template("productionManagerNewHire.html")
+
+
+@app.route("/productionmanager/newhire/submit", methods=["POST"])
+def productionManagerNewHireSubmit():
+    # Get data from form
+    reference = random.randint(1, 1000000)
+    contract_type = request.form.get("contract_type")
+    department = request.form.get("department")
+    experience = request.form.get("experience")
+    job_title = request.form.get("job_title")
+    description = request.form.get("description")
+    status = "pending"
+
+    # Save data to a file
+    with open("new_hire.csv", "a", newline="") as f:  # Append mode
+        writer = csv.writer(f)
+        if f.tell() == 0:  # Check if the file is empty
+            writer.writerow(
+                [
+                    "Reference Number",
+                    "Contract Type",
+                    "Requesting Department",
+                    "Year of Experience",
+                    "Job Title",
+                    "Job Description",
+                    "Status",
+                ]
+            )
+
+        writer.writerow(
+            [
+                reference,
+                contract_type,
+                department,
+                experience,
+                job_title,
+                description,
+                status,
+            ]
+        )
+    return redirect(url_for("productionManagerHome"))
+
+
+# production subteam
+@app.route("/productionteam/home")
+def productionTeamHome():
+    data = read_csv("task_production.csv")
+    return render_template(
+        "productionTeamHome.html",
+        data=data,
+    )
+
+
+@app.route("/productionteam/home/update/<int:row_id>", methods=["POST"])
+def productionTeamEditTaskSubmit(row_id):
+    new_value = request.json["new_value"]
+    data = read_csv("task_production.csv")
+
+    # Update the specific column in the selected row
+    data[row_id]["Assignee Edit"] = new_value
+    data[row_id]["Status"] = "Edited by Assignee"
+
+    # Write updated data back to CSV
+    with open("task_production.csv", "w", newline="") as csvfile:
+        fieldnames = data[0].keys()
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(data)
+
+    return redirect(url_for("productionTeamHome"))
+
+
+@app.route("/productionteam/budgetrequest")
+def productionTeamBudgetRequest():
+    return render_template("productionTeamBudgetRequest.html")
+
+
+@app.route("/productionteam/budgetrequest/submit", methods=["POST"])
+def productionTeamBudgetRequestSubmit():
+    # Get data from form
+    project_reference = request.form.get("project_reference")
+    department = request.form.get("department")
+    amount = request.form.get("amount")
+    sender = request.form.get("sender")
+    reason = request.form.get("reason")
+    status = "new"
+
+    # Save data to a file
+    with open("budget_request_production.csv", "a", newline="") as f:  # Append mode
+        writer = csv.writer(f)
+        if f.tell() == 0:  # Check if the file is empty
+            writer.writerow(
+                [
+                    "Project Reference",
+                    "Department",
+                    "Required Amount",
+                    "Sender",
+                    "Reason",
+                    "Status",
+                ]
+            )
+
+        writer.writerow([project_reference, department, amount, sender, reason, status])
+    return redirect(url_for("productionTeamHome"))
 
 
 # HR
