@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Service Team Homepage</title>
+    <link
+      rel="stylesheet"
+      href="{{url_for('static', filename = 'css/main.css')}}"
+    />
+    <style>
+      table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+      th,
+      td {
+        padding: 10px;
+        border: 1px solid #ddd;
+        text-align: center;
+      }
+      .edit-btn {
+        color: blue;
+        cursor: pointer;
+      }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+  </head>
+  <body>
+    <div style="display: flex; justify-content: center">
+      <h1>Welcome Service Team Member!</h1>
+    </div>
+    <h2>Assigned Task</h2>
+    <table>
+      <thead>
+        <tr>
+          {% for header in data[0].keys() %}
+          <th>{{ header }}</th>
+          {% endfor %}
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for row in data %}
+        <tr id="row-{{ loop.index0 }}">
+          {% for key, value in row.items() %}
+          <td>{{ value }}</td>
+          {% endfor %}
+          <!-- Edit button to trigger inline edit of the last column -->
+          <td>
+            <button
+              class="edit-btn"
+              onclick="editRow({{ loop.index0 }}, '{{ row['Assignee Edit'] }}')"
+            >
+              Edit
+            </button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <!-- Inline form for updating a specific row's last column -->
+    <div
+      id="editForm"
+      style="
+        display: none;
+        flex-direction: column;
+        gap: 10px;
+        padding: 10px;
+        border: 1px solid #ddd;
+        width: 300px;
+      "
+    >
+      <label for="new_value">Please input your edit here:</label>
+      <textarea id="new_value" name="new_value"></textarea>
+      <button type="button" onclick="saveEdit()">Save</button>
+      <button type="button" onclick="cancelEdit()">Cancel</button>
+    </div>
+    <a
+      class="seniorcustomerservicehome_content_button"
+      href="{{url_for('serviceTeamBudgetRequest')}}"
+      >Create Recruitment Request</a
+    >
+    <a
+      class="seniorcustomerservicehome_content_button"
+      href="{{url_for('login')}}"
+      >Back</a
+    >
+
+    <script>
+      let currentRowId = null;
+
+      function editRow(rowId, currentValue) {
+        currentRowId = rowId;
+        document.getElementById("editForm").style.display = "flex";
+        document.getElementById("new_value").value = currentValue;
+      }
+
+      function saveEdit() {
+        const newValue = document.getElementById("new_value").value;
+        $.ajax({
+          url: "/serviceteam/home/update/" + currentRowId,
+          type: "POST",
+          contentType: "application/json",
+          data: JSON.stringify({ new_value: newValue }),
+          success: function (response) {
+            // Update the table cell with the new value
+            $("#row-" + currentRowId + " td:last")
+              .prev()
+              .text(newValue);
+            $("#row-" + currentRowId + " td:last")
+              .prev()
+              .prev()
+              .text("Edited by Assignee");
+            document.getElementById("editForm").style.display = "none";
+          },
+          error: function (xhr, status, error) {
+            alert("Error: " + error);
+          },
+        });
+      }
+
+      function cancelEdit() {
+        document.getElementById("editForm").style.display = "none";
+      }
+    </script>
+  </body>
+</html>

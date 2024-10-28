@@ -242,5 +242,68 @@ def serviceManagerNewHireSubmit():
     return redirect(url_for("serviceManagerHome"))
 
 
+# service subteam
+@app.route("/serviceteam/home")
+def serviceTeamHome():
+    data = read_csv("task_service.csv")
+    return render_template(
+        "serviceTeamHome.html",
+        data=data,
+    )
+
+
+@app.route("/serviceteam/home/update/<int:row_id>", methods=["POST"])
+def serviceTeamEditTaskSubmit(row_id):
+    new_value = request.json["new_value"]
+    data = read_csv("task_service.csv")
+
+    # Update the specific column in the selected row
+    data[row_id]["Assignee Edit"] = new_value
+    data[row_id]["Status"] = "Edited by Assignee"
+
+    # Write updated data back to CSV
+    with open("task_service.csv", "w", newline="") as csvfile:
+        fieldnames = data[0].keys()
+        writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+        writer.writeheader()
+        writer.writerows(data)
+
+    return redirect(url_for("serviceTeamHome"))
+
+
+@app.route("/serviceteam/budgetrequest")
+def serviceTeamBudgetRequest():
+    return render_template("serviceTeamBudgetRequest.html")
+
+
+@app.route("/serviceteam/budgetrequest/submit", methods=["POST"])
+def serviceTeamBudgetRequestSubmit():
+    # Get data from form
+    project_reference = request.form.get("project_reference")
+    department = request.form.get("department")
+    amount = request.form.get("amount")
+    sender = request.form.get("sender")
+    reason = request.form.get("reason")
+    status = "new"
+
+    # Save data to a file
+    with open("budget_request_service.csv", "a", newline="") as f:  # Append mode
+        writer = csv.writer(f)
+        if f.tell() == 0:  # Check if the file is empty
+            writer.writerow(
+                [
+                    "Project Reference",
+                    "Department",
+                    "Required Amount",
+                    "Sender",
+                    "Reason",
+                    "Status",
+                ]
+            )
+
+        writer.writerow([project_reference, department, amount, sender, reason, status])
+    return redirect(url_for("serviceTeamHome"))
+
+
 if __name__ == "__main__":
     app.run(debug=True)
