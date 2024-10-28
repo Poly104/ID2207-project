@@ -1,5 +1,6 @@
 from flask import Flask, render_template, url_for, request, redirect
 import csv
+import random
 
 
 app = Flask(__name__)
@@ -41,6 +42,22 @@ def update_budget_request_status_service(record_number, new_status):
 
     # Write the updated rows back to the CSV
     with open("budget_request_service.csv", "w", newline="") as f:
+        writer = csv.DictWriter(f, fieldnames=updated_rows[0].keys())
+        writer.writeheader()
+        writer.writerows(updated_rows)
+
+
+def update_new_hire_status(record_number, new_status):
+    updated_rows = []
+    with open("new_hire.csv", "r", newline="") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            if row["Reference Number"] == record_number:
+                row["Status"] = new_status  # Update the status
+            updated_rows.append(row)
+
+    # Write the updated rows back to the CSV
+    with open("new_hire.csv", "w", newline="") as f:
         writer = csv.DictWriter(f, fieldnames=updated_rows[0].keys())
         writer.writeheader()
         writer.writerows(updated_rows)
@@ -218,11 +235,13 @@ def serviceManagerNewHire():
 @app.route("/servicemanager/newhire/submit", methods=["POST"])
 def serviceManagerNewHireSubmit():
     # Get data from form
+    reference = random.randint(1, 1000000)
     contract_type = request.form.get("contract_type")
     department = request.form.get("department")
     experience = request.form.get("experience")
     job_title = request.form.get("job_title")
     description = request.form.get("description")
+    status = "pending"
 
     # Save data to a file
     with open("new_hire.csv", "a", newline="") as f:  # Append mode
@@ -230,15 +249,27 @@ def serviceManagerNewHireSubmit():
         if f.tell() == 0:  # Check if the file is empty
             writer.writerow(
                 [
+                    "Reference Number",
                     "Contract Type",
                     "Requesting Department",
                     "Year of Experience",
                     "Job Title",
                     "Job Description",
+                    "Status",
                 ]
             )
 
-        writer.writerow([contract_type, department, experience, job_title, description])
+        writer.writerow(
+            [
+                reference,
+                contract_type,
+                department,
+                experience,
+                job_title,
+                description,
+                status,
+            ]
+        )
     return redirect(url_for("serviceManagerHome"))
 
 
@@ -303,6 +334,28 @@ def serviceTeamBudgetRequestSubmit():
 
         writer.writerow([project_reference, department, amount, sender, reason, status])
     return redirect(url_for("serviceTeamHome"))
+
+
+# HR
+@app.route("/hrteam/home")
+def hrTeamHome():
+    data = read_csv("new_hire.csv")
+    return render_template(
+        "hrTeamHome.html",
+        data=data,
+    )
+
+
+@app.route("/hrteam/home/accept/<record_number>", methods=["POST"])
+def resolve_request_by_hr(record_number):
+    update_new_hire_status(record_number, "resolved")
+    return "", 204
+
+
+@app.route("/hrteam/home/reject/<record_number>", methods=["POST"])
+def reject_request_by_hr(record_number):
+    update_new_hire_status(record_number, "rejected")
+    return "", 204
 
 
 if __name__ == "__main__":
