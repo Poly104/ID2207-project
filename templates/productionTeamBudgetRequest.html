@@ -1,0 +1,48 @@
+{% extends "base.html" %} {% block head %} {% endblock %} {%block body%}
+<div class="customerserviceform">
+  <div class="customerserviceform_header">
+    <h1>Request For Extra Budget</h1>
+  </div>
+
+  <form
+    class="customerserviceform_form"
+    action="{{url_for('productionTeamBudgetRequestSubmit')}}"
+    method="post"
+  >
+    <div class="customerserviceform_form_question">
+      <text class="customerserviceform_form_fieldname"
+        >Requesting Department</text
+      >
+      <div class="customerserviceform_form_radio">
+        <input type="radio" name="department" value="admin" /> Administration
+        <input type="radio" name="deparment" value="service" /> Services
+        <input type="radio" name="deparment" value="production" /> Production
+        <input type="radio" name="deparment" value="financial" /> Financial
+      </div>
+    </div>
+
+    <div class="customerserviceform_form_question">
+      <text class="customerserviceform_form_fieldname">Project Reference</text>
+      <input type="text" name="project_reference" />
+    </div>
+
+    <div class="customerserviceform_form_question">
+      <text class="customerserviceform_form_fieldname">Required Amount</text>
+      <input type="text" name="amount" />
+    </div>
+
+    <div class="customerserviceform_form_question">
+      <text class="customerserviceform_form_fieldname">Sender</text>
+      <input type="text" name="sender" />
+    </div>
+
+    <div class="customerserviceform_form_question">
+      <text class="customerserviceform_form_fieldname">Reason</text>
+      <textarea name="reason"></textarea>
+    </div>
+    <button class="customerserviceform_form_button" type="submit">
+      Submit
+    </button>
+  </form>
+</div>
+{%endblock%}
