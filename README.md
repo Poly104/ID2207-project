@@ -1,6 +1,10 @@
 # ID2207-project
 
-current progress: <br>
-Completed user Stories: 1, 2, 13, 14  <br>
-In progress:  <br>
-Pending: 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
+## Instruction to run the program:
+
+- Activate the virtaul environment using the command _source env/bin/activate_
+- Run the program using the command _python -m app_
+
+## Notes:
+
+- If you are denied to access 127.0.0.1 and encounter HTTP ERROR 403 after sucessfully run the program, you may try to clear your browser cache and try again.
